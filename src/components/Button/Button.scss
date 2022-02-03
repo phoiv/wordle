@@ -1,0 +1,25 @@
+.key-button{
+  border-radius: 4px;
+  background-color: lightgray;
+  padding: 20px 14px;
+  margin-right: 6px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0s ease-out;
+  transition-delay: 3.5s;
+  &.wrong{
+    background-color: #3a3a3c;
+  }
+
+  &.exists{
+    background-color: #b59f3b;
+  }
+
+  &.exact{
+    background-color: #538d4e;
+  }
+
+}
