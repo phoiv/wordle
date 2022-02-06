@@ -4,7 +4,19 @@ import wordList from '../../json_words.json';
 import React from 'react';
 import Button from "../../components/Button/Button";
 import WordleLine from "../../components/WordleLine/WordleLine";
+import AlertMessage from "../../components/AlertMessage/AlertMessage";
+import {CSSTransition, TransitionGroup} from 'react-transition-group';
+import {v4 as uuidv4} from 'uuid';
 
+
+wordList.forEach((word, i) => {
+    word = word.replace('Ϊ', 'Ι')
+    word = word.replace('Ϋ', 'Υ')
+    wordList[i] = word;
+})
+
+
+//CONSTS FOR GAME//
 const keyboard = [
     'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', 'newline',
     'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'newline',
@@ -16,6 +28,8 @@ const greekKeyboard = [
     'Α', 'Σ', 'Δ', 'Φ', 'Γ', 'Η', 'Ξ', 'Κ', 'Λ', 'newline',
     'del', 'Ζ', 'Χ', 'Ψ', 'Ω', 'Β', 'Ν', 'Μ', 'ENTER'
 ]
+
+const messageLifetime = 1500;
 
 
 function Wordle() {
@@ -52,6 +66,10 @@ function Wordle() {
     // const [inputEnabled, setInputEnabled] = useState(true);
     const [animationStage, setAnimationStage] = useState('none');
 
+    const [newAlert, setNewAlert] = useState(false);
+    const [alertList, setAlertList] = useState([]);
+
+
     const [gameWon, setGameWon] = useState(false)
 
     // console.log(`CURRENT WORD = ${currentLine} -- ${currentWordle}`)
@@ -59,24 +77,43 @@ function Wordle() {
     // console.log(solution, frequencyTable)
     // console.log(hintsTable)
 
-    useEffect(()=>{
-        if (animationStage == 'invalid_word'){
-            setTimeout(()=>{
+    useEffect(() => {
+        if (animationStage == 'invalid_word') {
+            setTimeout(() => {
                 setAnimationStage('none');
-            },1000)
-        }
-        else if (animationStage == 'revealing'){
-            setTimeout(()=>{
+
+            }, 1000)
+        } else if (animationStage == 'revealing') {
+            setTimeout(() => {
                 setAnimationStage('none');
-            },3500)
+            }, 3500)
         }
     }, [animationStage])
 
+    // useEffect(() => {
+    //     if (!newAlert) return;
+    //     setNewAlert(false)
+    //     console.log('hi')
+    //     setTimeout(() => {
+    //
+    //         console.log(alertList)
+    //         // let newList = [...alertList]
+    //         // console.log('removing..',newList);
+    //         // newList.pop()
+    //         // console.log('removed..',newList);
+    //         // setAlertList(newList);
+    //
+    //     }, 5000)
+    // }, [newAlert])
+
+    const alertListRef = useRef(alertList);
+    alertListRef.current = alertList;
+
     const handleKeyboardClick = (key) => {
-        console.log("PRESSED -> ", key)
+        // console.log("PRESSED -> ", key)
         //make this behavour with hoooks
         if (currentLine == 6) return;
-        if (animationStage != 'none') return;
+        // if (animationStage != 'none') return;
         if (gameWon) return;
         // if (!inputEnabled) return;
         switch (key) {
@@ -86,8 +123,14 @@ function Wordle() {
                 break;
             case 'ENTER':
                 //check for invalid word
-                if (currentWordle.length < 5 || !wordList.includes(currentWordle)) {
+                if (currentWordle.length < 5) {
                     setAnimationStage('invalid_word');
+                    sendMessage('not enough letters')
+                    break;
+                }
+                if (!wordList.includes(currentWordle)) {
+                    setAnimationStage('invalid_word');
+                    sendMessage('not in word list')
                     break;
                 }
 
@@ -150,13 +193,65 @@ function Wordle() {
         //check for win
         if (newHintsLine.every((hint) => hint == 'exact')) {
             console.log('victory');
+            setTimeout(() => {
+                sendMessage('VICTORY')
+            }, 3500)
+
             setGameWon(true)
         }
 
     }
 
+    function sendMessage(message) {
+        const newList = [...alertList];
+        const newMessage = {
+            id: uuidv4(),
+            message: message
+        }
+        newList.unshift(newMessage);
+        setAlertList(newList)
+
+        setTimeout(() => {
+                console.log(alertListRef.current)
+                let newAlertList = [...alertListRef.current]
+                newAlertList.pop()
+                setAlertList(newAlertList)
+            },
+            messageLifetime)
+    }
+
     return (
         <div className='Wordle-container'>
+
+            <div className={`alert-container`}>
+                <TransitionGroup className="todo-list">
+                    {alertList.map(({id, message}) => (
+                        <CSSTransition
+                            key={id}
+                            timeout={500}
+                            classNames="alert"
+                        >
+                            <AlertMessage message={message}>
+
+                            </AlertMessage>
+                        </CSSTransition>
+                    ))}
+                </TransitionGroup>
+                {/*<CSSTransition*/}
+                {/*    in={alert}*/}
+                {/*    timeout={{*/}
+                {/*        exit: 5000,*/}
+                {/*    }}*/}
+                {/*    classNames="alert"*/}
+                {/*    mountOnEnter*/}
+                {/*    unmountOnExit*/}
+                {/*    // onEnter={() => setShowButton(false)}*/}
+                {/*    // onExited={() => setShowButton(true)}*/}
+                {/*>*/}
+                {/*    <AlertMessage></AlertMessage>*/}
+                {/*</CSSTransition>*/}
+            </div>
+
             <div className='wordle-lines-wrapper'>
                 {
                     pastWorldes.map((line, i) => {

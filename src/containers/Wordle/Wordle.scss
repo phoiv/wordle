@@ -3,6 +3,7 @@
 }
 
 .Wordle-container{
+  position: relative;
   margin:  10vh auto;
   height: 80vh;
   width: 460px;
@@ -20,5 +21,14 @@
     width: 100%;
     flex-wrap: wrap;
     justify-content: center;
+  }
+
+  & .alert-container {
+    z-index: 1000;
+    position: absolute;
+    top: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+
   }
 }

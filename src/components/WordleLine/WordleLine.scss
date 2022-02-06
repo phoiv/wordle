@@ -1,5 +1,10 @@
-$animation-time: 0.7s;
-$animation-half: 0.35s;
+//$animation-time: 0.7s;
+//$animation-half: 0.35s;
+:root {
+  --flip-animation-time: 0.7s;
+  --flip-animation-half: calc(var(--flip-animation-time) / 2);
+}
+
 
 .worlde-line {
   display: flex;
@@ -45,31 +50,33 @@ $animation-half: 0.35s;
 
     }
 
+
+
     &:not(.empty) {
       animation: revealTile 0.7s forwards ease-out;
       &:nth-child(1) {
         animation-delay: 0s;
-        transition-delay: 0*$animation-time + $animation-half;
+        transition-delay: calc(0 * var(--flip-animation-time) + var(--flip-animation-half));
       }
 
       &:nth-child(2) {
-        animation-delay: 1*$animation-time;
-        transition-delay: 1*$animation-time + $animation-half;
+        animation-delay: calc(1 * var(--flip-animation-time));
+        transition-delay: calc(1 * var(--flip-animation-time) + var(--flip-animation-half));
       }
 
       &:nth-child(3) {
-        animation-delay: 2*$animation-time;
-        transition-delay: 2*$animation-time + $animation-half;
+        animation-delay: calc(2 * var(--flip-animation-time));
+        transition-delay: calc(2 * var(--flip-animation-time) + var(--flip-animation-half));
       }
 
       &:nth-child(4) {
-        animation-delay: 3*$animation-time;
-        transition-delay: 3*$animation-time + $animation-half;
+        animation-delay: calc(3 * var(--flip-animation-time));
+        transition-delay: calc(3 * var(--flip-animation-time) + var(--flip-animation-half));
       }
 
       &:nth-child(5) {
-        animation-delay: 4*$animation-time;
-        transition-delay: 4*$animation-time + $animation-half;
+        animation-delay: calc(4 * var(--flip-animation-time));
+        transition-delay: calc(4 * var(--flip-animation-time) + var(--flip-animation-half));
       }
     }
   }
