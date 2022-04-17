@@ -30,6 +30,8 @@ const greekKeyboard = [
 ]
 
 const messageLifetime = 1500;
+const revealingAnimationLifetime = 2000;
+const invalidWordAnimationLifetime = 800;
 
 
 function Wordle() {
@@ -42,10 +44,11 @@ function Wordle() {
             return prev
         }, {}));
 
-
+    //get random word
     const [solution, setSolution] = useState(() => wordList[Math.floor(Math.random() * wordList.length)]);
+
     const [frequencyTable, setFrequencyTable] = useState(
-        //makes an object with the fequency of each letter DUH
+        //makes an object with the frequency of each letter of the 'solution' DUH
         () => {
             let freq = {}
             for (let i = 0; i < solution.length; i++) {
@@ -56,15 +59,16 @@ function Wordle() {
         }
     )
 
-
+    //list of word entered
     const [pastWorldes, setPastWorldes] = useState(new Array(6).fill(""))
     const [hintsTable, setHintsTable] = useState(new Array(6).fill(new Array(5).fill("empty")))
+    //word we are typing
     const [currentWordle, setCurrentWordle] = useState("");
     const [currentLine, setCurrentLine] = useState(0);
 
     //combine these states
     // const [inputEnabled, setInputEnabled] = useState(true);
-    const [animationStage, setAnimationStage] = useState('none');
+    const [animationStage, setAnimationStage] = useState('none'); // none | revealing | invalid_word
 
     const [newAlert, setNewAlert] = useState(false);
     const [alertList, setAlertList] = useState([]);
@@ -78,44 +82,35 @@ function Wordle() {
     // console.log(hintsTable)
 
     useEffect(() => {
-        if (animationStage == 'invalid_word') {
+            document.documentElement.style.setProperty('--flip-animation-time', revealingAnimationLifetime/5000+'s');
+            document.documentElement.style.setProperty('--flip-animation-half', revealingAnimationLifetime/10000+'s');
+            document.documentElement.style.setProperty('--invalid-animation', invalidWordAnimationLifetime/1000+'s');
+        }
+        , [])
+
+    useEffect(() => {
+        if (animationStage === 'invalid_word') {
             setTimeout(() => {
                 setAnimationStage('none');
 
-            }, 1000)
-        } else if (animationStage == 'revealing') {
+            }, invalidWordAnimationLifetime)
+        } else if (animationStage === 'revealing') {
             setTimeout(() => {
                 setAnimationStage('none');
-            }, 3500)
+            }, revealingAnimationLifetime)
         }
     }, [animationStage])
 
-    // useEffect(() => {
-    //     if (!newAlert) return;
-    //     setNewAlert(false)
-    //     console.log('hi')
-    //     setTimeout(() => {
-    //
-    //         console.log(alertList)
-    //         // let newList = [...alertList]
-    //         // console.log('removing..',newList);
-    //         // newList.pop()
-    //         // console.log('removed..',newList);
-    //         // setAlertList(newList);
-    //
-    //     }, 5000)
-    // }, [newAlert])
 
     const alertListRef = useRef(alertList);
     alertListRef.current = alertList;
 
     const handleKeyboardClick = (key) => {
-        // console.log("PRESSED -> ", key)
-        //make this behavour with hoooks
+
         if (currentLine == 6) return;
-        // if (animationStage != 'none') return;
+        if (animationStage != 'none') return;
         if (gameWon) return;
-        // if (!inputEnabled) return;
+
         switch (key) {
 
             case 'del':
@@ -212,7 +207,7 @@ function Wordle() {
         setAlertList(newList)
 
         setTimeout(() => {
-                console.log(alertListRef.current)
+
                 let newAlertList = [...alertListRef.current]
                 newAlertList.pop()
                 setAlertList(newAlertList)
@@ -237,19 +232,6 @@ function Wordle() {
                         </CSSTransition>
                     ))}
                 </TransitionGroup>
-                {/*<CSSTransition*/}
-                {/*    in={alert}*/}
-                {/*    timeout={{*/}
-                {/*        exit: 5000,*/}
-                {/*    }}*/}
-                {/*    classNames="alert"*/}
-                {/*    mountOnEnter*/}
-                {/*    unmountOnExit*/}
-                {/*    // onEnter={() => setShowButton(false)}*/}
-                {/*    // onExited={() => setShowButton(true)}*/}
-                {/*>*/}
-                {/*    <AlertMessage></AlertMessage>*/}
-                {/*</CSSTransition>*/}
             </div>
 
             <div className='wordle-lines-wrapper'>

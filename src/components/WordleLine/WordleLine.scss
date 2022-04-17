@@ -3,6 +3,7 @@
 :root {
   --flip-animation-time: 0.7s;
   --flip-animation-half: calc(var(--flip-animation-time) / 2);
+  --invalid-animation: 1s;
 }
 
 
@@ -10,50 +11,47 @@
   display: flex;
   justify-content: center;
   margin-bottom: 6px;
-  &.invalid{
-    animation: invalid 1s ease-out;
+
+  &.invalid {
+    animation: invalid var(--invalid-animation) ease-out;
   }
 
   & > div {
     width: 60px;
     height: 60px;
-    line-height: 60px;
+    line-height: 56px;
     text-align: center;
     margin-right: 6px;
     font-size: 30px;
     color: white;
     font-weight: bold;
-    background-color: transparent;
     background-color: gray;
+    border: 2px solid transparent;
 
     &.empty {
-      border: 2px solid #202020;
+      border-color: #202020;
       transition: all 0s ease-out;
-
     }
 
     &.wrong {
       background-color: #3a3a3c;
       transition: all 0s ease-out;
-
     }
 
     &.exists {
       background-color: #b59f3b;
       transition: all 0s ease-out;
-
     }
 
     &.exact {
       background-color: #538d4e;
       transition: all 0s ease-out;
-
     }
-
 
 
     &:not(.empty) {
       animation: revealTile 0.7s forwards ease-out;
+
       &:nth-child(1) {
         animation-delay: 0s;
         transition-delay: calc(0 * var(--flip-animation-time) + var(--flip-animation-half));
@@ -93,6 +91,7 @@
     transform: rotateX(0);
   }
 }
+
 @keyframes invalid {
   0% {
     transform: translateX(10px);
