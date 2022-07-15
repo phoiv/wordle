@@ -144,6 +144,7 @@ function Wordle() {
                 setCurrentLine(currentLine => currentLine + 1)
                 setCurrentWordle("");
 
+
                 break;
             default:
                 if (currentWordle.length == 5) break; //world is full, add invalid animation...
@@ -199,10 +200,17 @@ function Wordle() {
 
             setGameWon(true)
         }
+        //WE LOST
+        else if (currentLine + 1 === 6){
+            setTimeout(() => {
+                sendMessage(solution, true)
+            }, 3500)
+
+        }
 
     }
 
-    function sendMessage(message) {
+    function sendMessage(message, permanent = false) {
         const newList = [...alertList];
         const newMessage = {
             id: uuidv4(),
@@ -210,6 +218,8 @@ function Wordle() {
         }
         newList.unshift(newMessage);
         setAlertList(newList)
+
+        if (permanent) return
 
         setTimeout(() => {
                 console.log(alertListRef.current)
@@ -231,9 +241,7 @@ function Wordle() {
                             timeout={500}
                             classNames="alert"
                         >
-                            <AlertMessage message={message}>
-
-                            </AlertMessage>
+                            <AlertMessage message={message}/>
                         </CSSTransition>
                     ))}
                 </TransitionGroup>
